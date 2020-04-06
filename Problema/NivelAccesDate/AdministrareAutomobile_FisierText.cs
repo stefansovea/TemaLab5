@@ -7,6 +7,7 @@ namespace NivelAccesDate
 {
     public class AdministrareAutomobile_FisierText: IStocareData
     {
+        private const int PAS_ALOCARE = 10;
         string NumeFisier { get; set; }
         public AdministrareAutomobile_FisierText(string numeFisier)
         {
@@ -38,6 +39,42 @@ namespace NivelAccesDate
                     throw new Exception("Eroare generica. Mesaj: " + eGen.Message);
                 }
             }
+        }
+
+        public Automobile[] GetAutomobile(out int NumarMasini)
+        {
+            Automobile[] masini = new Automobile[PAS_ALOCARE];
+
+            try
+            {
+                // instructiunea 'using' va apela sr.Close()
+                using (StreamReader sr = new StreamReader(NumeFisier))
+                {
+                    string line;
+                    NumarMasini = 0;
+
+                    //citeste cate o linie si creaza un obiect de tip Student pe baza datelor din linia citita
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        masini[NumarMasini] = new Automobile(line);
+                        NumarMasini++;
+                        if (NumarMasini == PAS_ALOCARE)
+                        {
+                            Array.Resize(ref masini, NumarMasini + PAS_ALOCARE);
+                        }
+                    }
+                }
+            }
+            catch (IOException eIO)
+            {
+                throw new Exception("Eroare la deschiderea fisierului. Mesaj: " + eIO.Message);
+            }
+            catch (Exception eGen)
+            {
+                throw new Exception("Eroare generica. Mesaj: " + eGen.Message);
+            }
+
+            return masini;
         }
     }
 }
